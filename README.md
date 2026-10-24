@@ -3,6 +3,9 @@
 Nachfolger der Browser-Version von Bomberman (p5.js, HTML, CSS, JavaScript).
 Der Ordner `bbm2/` ist komplett eigenständig und kann so wie er ist hochgeladen werden.
 
+**Jetzt spielen:** <https://koreleth.github.io/bomberman-2/>
+(Repo: <https://github.com/Koreleth/bomberman-2>)
+
 ## Neu in Bomberman 2
 
 ### Balancing
@@ -175,8 +178,13 @@ Danach <http://localhost:8080> öffnen. Den Online-Modus kann man lokal mit zwei
 
 ## Online stellen
 
-**GitHub Pages:** Den Inhalt von `bbm2/` in ein Repo legen und unter
-*Settings → Pages* veröffentlichen (Bomberman 1 lief über einen Workflow im Repo `arcade-game`).
+**GitHub Pages (eingerichtet):** Das Repo `Koreleth/bomberman-2` veröffentlicht den Branch `main`
+direkt als Seite (*Settings → Pages → Deploy from a branch → main / root*). Nach jedem `git push`
+baut GitHub die Seite in etwa einer Minute neu: <https://koreleth.github.io/bomberman-2/>.
+Die leere Datei `.nojekyll` sorgt dafür, dass GitHub die Dateien unverändert ausliefert.
+
+**Mit anderen spielen:** Seite öffnen, *PLAY → CREATE ONLINE LOBBY*, dann den Code oder den
+Einladungslink (*COPY INVITE LINK*, z. B. `https://koreleth.github.io/bomberman-2/?join=1234`) verschicken.
 
 **itch.io:** Den *Inhalt* von `bbm2/` zippen (die `index.html` muss oben im ZIP liegen),
 als neues Projekt mit „Kind of project: HTML“ hochladen und eine Größe von 750×750 einstellen.
