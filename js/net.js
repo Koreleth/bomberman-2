@@ -9,6 +9,24 @@ Net
 const PEER_PREFIX = "koreleth-arcade-bomberman2-";
 const MAX_PLAYERS = 4;
 
+//ICE: servers that help two browsers to find a direct connection
+//  STUN tells a browser its public address, that is enough for most home networks (laptop <-> laptop)
+//  TURN relays the data when no direct connection is possible: phones on mobile data, strict networks
+//  -> free account at https://www.expressturn.com, then put its server, username and password here
+//     (the public TURN servers built into PeerJS do not work anymore)
+const TURN_SERVER = {
+  urls: "",          //e.g. "turn:relay1.expressturn.com:3478"
+  username: "",
+  credential: ""
+};
+const ICE_SERVERS = [
+  { urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"] }
+].concat(TURN_SERVER.urls ? [TURN_SERVER] : []);
+
+function peerOptions() {
+  return { config: { iceServers: ICE_SERVERS } };
+}
+
 let peer = null;
 let hostConn = null;      //client: connection to the host
 let slots = [];           //host: one entry per player {conn, connected}, index = player number
@@ -131,7 +149,7 @@ function createLobby(attempt = 0) {
   resetNet();
   setStatus("mode-status", "CREATING LOBBY...");
   const code = String(Math.floor(Math.random() * 10000)).padStart(4, "0");
-  peer = new Peer(PEER_PREFIX + code);
+  peer = new Peer(PEER_PREFIX + code, peerOptions());
 
   peer.on("open", () => {
     netMode = "host";
@@ -252,8 +270,8 @@ function joinLobby(code) {
   }
   resetNet();
   setStatus("mode-status", "CONNECTING...");
-  peer = new Peer();
-  joinTimeout = setTimeout(() => leaveOnline("COULD NOT CONNECT TO LOBBY " + code), 15000);
+  peer = new Peer(peerOptions());
+  joinTimeout = setTimeout(() => leaveOnline(noConnectionMessage(code)), 15000);
 
   peer.on("open", () => {
     hostConn = peer.connect(PEER_PREFIX + code, { reliable: true, serialization: "json" });
@@ -264,6 +282,12 @@ function joinLobby(code) {
       setStatus("mode-status", "");
     });
     hostConn.on("data", onHostMessage);
+    //NO DIRECT CONNECTION: the lobby exists, but the two browsers can not reach each other
+    hostConn.on("iceStateChanged", (state) => {
+      if (state == "failed" && netMode != "client") {
+        leaveOnline(noConnectionMessage(code));
+      }
+    });
     hostConn.on("close", () => {
       if (netMode == "client") {
         leaveOnline("THE HOST HAS LEFT");
@@ -277,6 +301,14 @@ function joinLobby(code) {
       leaveOnline(connectionError(err));
     }
   });
+}
+
+//MESSAGE: why joining failed (without a TURN server phones on mobile data can not connect)
+function noConnectionMessage(code) {
+  if (TURN_SERVER.urls) {
+    return "COULD NOT CONNECT TO LOBBY " + code;
+  }
+  return "NO DIRECT CONNECTION TO LOBBY " + code + " - USE WIFI INSTEAD OF MOBILE DATA";
 }
 
 function onHostMessage(msg) {
