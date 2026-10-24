@@ -157,13 +157,15 @@ p5.js (cdnjs) und PeerJS (jsDelivr) werden über ein CDN geladen.
 
 **Bekannte Grenzen:**
 
-- **Handys im Mobilfunknetz** (und strenge Firmen- oder Uni-Netze) können ohne TURN-Server keine
-  direkte Verbindung aufbauen. Die Lobby lässt sich dann zwar erstellen, aber niemand kommt hinein.
-  Die öffentlichen TURN-Server, die PeerJS früher mitbrachte, funktionieren nicht mehr (getestet Oktober 2026).
-  Lösung: kostenloses Konto z. B. bei [ExpressTURN](https://www.expressturn.com) anlegen und Server, Benutzername
-  und Passwort oben in `js/net.js` bei `TURN_SERVER` eintragen. Ohne TURN-Server zeigt das Spiel beim
-  Beitreten „USE WIFI INSTEAD OF MOBILE DATA“. Im WLAN funktioniert es auch ohne.
-  Die Zugangsdaten stehen dann öffentlich im Code, das ist bei einer statischen Seite nicht anders lösbar.
+- **Online spielen geht im Moment nur zwischen Laptops / PCs.** Handys können eine Lobby zwar erstellen,
+  aber keine Verbindung zu anderen Geräten aufbauen, weder über Mobilfunk noch im WLAN (getestet Oktober 2026).
+  Grund: Handys brauchen dafür einen TURN-Server, der die Daten weiterleitet. Die öffentlichen TURN-Server,
+  die PeerJS früher mitbrachte, funktionieren nicht mehr, und kostenlose Anbieter gibt es kaum noch.
+  Das Spiel zeigt dann beim Beitreten „PHONES CAN NOT PLAY ONLINE YET, USE A LAPTOP OR PC“.
+  Lokal zu zweit an einem Handy oder Tablet funktioniert.
+  **Lösungswege für später:** einen eigenen kleinen Relay-Server betreiben (z. B. kostenlos als Cloudflare Worker),
+  oder einen TURN-Server mit Zugangsdaten oben in `js/net.js` bei `TURN_SERVER` eintragen
+  (die Zugangsdaten stehen dann öffentlich im Code, das ist bei einer statischen Seite nicht anders lösbar).
 - Der Host sollte seinen Tab im Vordergrund lassen. Im Hintergrund drosseln Browser die Seite,
   und dann läuft das Spiel für alle langsamer.
 

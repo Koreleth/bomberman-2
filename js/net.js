@@ -303,12 +303,12 @@ function joinLobby(code) {
   });
 }
 
-//MESSAGE: why joining failed (without a TURN server phones on mobile data can not connect)
+//MESSAGE: why joining failed (without a TURN server phones can not connect, not even in the WiFi)
 function noConnectionMessage(code) {
   if (TURN_SERVER.urls) {
     return "COULD NOT CONNECT TO LOBBY " + code;
   }
-  return "NO DIRECT CONNECTION TO LOBBY " + code + " - USE WIFI INSTEAD OF MOBILE DATA";
+  return "NO CONNECTION TO LOBBY " + code + " - PHONES CAN NOT PLAY ONLINE YET, USE A LAPTOP OR PC";
 }
 
 function onHostMessage(msg) {
