@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bomberman 2</title>
+  <link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/animations.js"></script>
+  <script src="js/items.js"></script>
+  <script src="js/bomb.js"></script>
+  <script src="js/hud.js"></script>
+  <script src="js/karte.js"></script>
+  <script src="js/suddendeath.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/net.js"></script>
+  <script src="js/touch.js"></script>
+  <script src="js/bomberman.js"></script>
+</head>
+<body>
+  <main id="game">
+    <!-- PLAY: local or online -->
+    <section id="panel-mode" class="panel" hidden>
+      <h2>PLAY</h2>
+      <button id="btn-local" type="button">LOCAL - 2 PLAYERS</button>
+      <button id="btn-create" type="button">CREATE ONLINE LOBBY</button>
+      <div class="join">
+        <input id="join-code" type="text" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="CODE" aria-label="Lobby code">
+        <button id="btn-join" type="button">JOIN</button>
+      </div>
+      <p id="mode-status" class="status" role="status"></p>
+      <button id="btn-back" type="button" class="secondary">BACK</button>
+    </section>
+
+    <!-- LOBBY: code + players -->
+    <section id="panel-lobby" class="panel" hidden>
+      <h2>LOBBY</h2>
+      <p class="code-label">CODE</p>
+      <p id="lobby-code" class="code" title="Click to copy"></p>
+      <ul id="lobby-slots"></ul>
+      <button id="btn-invite" type="button" class="secondary">COPY INVITE LINK</button>
+      <button id="btn-start" type="button">START GAME</button>
+      <p id="lobby-status" class="status" role="status"></p>
+      <button id="btn-leave" type="button" class="secondary">LEAVE</button>
+    </section>
+  </main>
+
+  <!-- Browsers only allow audio after a user interaction -->
+  <div id="start-overlay">
+    <button id="start-button" type="button">CLICK TO START</button>
+    <p>Lokal zu zweit oder online mit bis zu 4 Spielern</p>
+    <p class="credits">
+      Some of the songs and/or sound effects in this project were created by ViRiX Dreamcore (David Mckee).
+      <a href="https://www.virixcore.net" target="_blank" rel="noopener">www.virixcore.net</a> for more information
+      <br>Bomberman character sprites ripped by Phongpon.
+    </p>
+  </div>
+</body>
+</html>

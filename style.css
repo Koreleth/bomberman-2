@@ -1,0 +1,396 @@
+@font-face {
+  font-family: "Pixel";
+  src: url("font/pixel.ttf");
+}
+
+@font-face {
+  font-family: "Geospeed";
+  src: url("font/geospeed.ttf");
+}
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #1d2a4d;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Scale the 750x750 game to the window, keeping it square. --u = one game pixel */
+#game {
+  --u: calc(min(100vw, 100vh) / 750);
+  position: relative;
+  width: min(100vw, 100vh);
+  height: min(100vw, 100vh);
+}
+
+canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ---------- Panels (local / online, lobby) ---------- */
+
+.panel {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  width: calc(var(--u) * 470);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 14);
+  padding: calc(var(--u) * 28);
+  background: rgba(29, 42, 77, 0.94);
+  border: calc(var(--u) * 4) solid #fff;
+  color: #fff;
+  font-family: "Pixel", monospace;
+  font-size: calc(var(--u) * 20);
+  text-align: center;
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+.panel h2 {
+  margin: 0 0 calc(var(--u) * 6);
+  font-family: "Geospeed", sans-serif;
+  font-size: calc(var(--u) * 48);
+  font-weight: normal;
+}
+
+.panel p {
+  margin: 0;
+}
+
+.panel button,
+.panel input {
+  font: inherit;
+  font-size: calc(var(--u) * 22);
+  padding: calc(var(--u) * 12);
+  color: #fff;
+  background: #5273b5;
+  border: calc(var(--u) * 3) solid #fff;
+}
+
+.panel button {
+  cursor: pointer;
+}
+
+.panel button:hover:not(:disabled),
+.panel button:focus-visible {
+  color: #eb8c46;
+  outline: none;
+}
+
+.panel button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.panel button[hidden] {
+  display: none;
+}
+
+.panel button.secondary {
+  background: transparent;
+}
+
+.join {
+  display: flex;
+  gap: calc(var(--u) * 10);
+}
+
+.join input {
+  flex: 1;
+  min-width: 0;
+  background: #fff;
+  color: #1d2a4d;
+  text-align: center;
+  letter-spacing: 0.3em;
+}
+
+.join input::placeholder {
+  color: #9aa6c4;
+  letter-spacing: 0.1em;
+}
+
+.status {
+  min-height: 1.2em;
+  color: #eb8c46;
+}
+
+.code-label {
+  font-size: calc(var(--u) * 16);
+  opacity: 0.8;
+}
+
+.code {
+  font-size: calc(var(--u) * 64);
+  letter-spacing: 0.2em;
+  cursor: copy;
+}
+
+#lobby-slots {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(var(--u) * 8);
+}
+
+#lobby-slots li {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 8);
+  padding: calc(var(--u) * 6);
+  border: calc(var(--u) * 2) solid rgba(255, 255, 255, 0.35);
+  font-size: calc(var(--u) * 14);
+  text-align: left;
+}
+
+#lobby-slots li.me {
+  border-color: #eb8c46;
+}
+
+#lobby-slots li.free {
+  opacity: 0.4;
+}
+
+/* first frame (standing, front) of the 448x760 bomber sheet, shown 1.5x */
+.slot-pic {
+  flex: none;
+  width: calc(var(--u) * 48);
+  height: calc(var(--u) * 60);
+  background-size: calc(var(--u) * 672) calc(var(--u) * 1140);
+  background-position: 0 0;
+  image-rendering: pixelated;
+}
+
+/* ---------- Start overlay ---------- */
+
+#start-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(20, 28, 55, 0.75);
+  font-family: "Pixel", monospace;
+  color: #fff;
+}
+
+#start-overlay[hidden] {
+  display: none;
+}
+
+#start-button {
+  font-family: inherit;
+  font-size: 32px;
+  padding: 16px 32px;
+  color: #fff;
+  background: #5273b5;
+  border: 4px solid #fff;
+  cursor: pointer;
+}
+
+#start-button:hover {
+  color: #eb8c46;
+}
+
+#start-overlay p {
+  margin: 0;
+  font-size: 18px;
+}
+
+#start-overlay .credits {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+  opacity: 0.85;
+}
+
+#start-overlay a {
+  color: #eb8c46;
+}
+
+/* ---------- Touch controls (phones / tablets) ---------- */
+
+body.touch {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* while playing: game on top, controls below (portrait) or left + right (landscape) */
+body.touch.playing {
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* --size = edge of the square game, the controls use the rest of the screen */
+body.touch.playing {
+  --size: min(100vw, calc(100vh - 200px));
+}
+
+body.touch.playing #game {
+  --u: calc(var(--size) / 750);
+  width: var(--size);
+  height: var(--size);
+}
+
+#touch-controls {
+  position: fixed;
+  /* portrait: the area under the game */
+  inset: var(--size) 0 0 0;
+  z-index: 5;
+  pointer-events: none;
+  --stick: min(140px, 36vw);
+  --bomb: min(110px, 26vw);
+}
+
+#touch-controls[hidden] {
+  display: none;
+}
+
+#touch-controls > * {
+  position: absolute;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.touch-stick {
+  width: var(--stick);
+  height: var(--stick);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0 45%, rgba(20, 28, 55, 0.55) 46%);
+  border: 4px solid rgba(255, 255, 255, 0.85);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.touch-knob {
+  width: 42%;
+  height: 42%;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+.touch-stick.active .touch-knob {
+  background: #eb8c46;
+}
+
+.touch-bomb {
+  width: var(--bomb);
+  height: var(--bomb);
+  padding: 0;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  background: rgba(78, 92, 128, 0.9);
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+
+/* bomb of the sprite sheet (frame 3 of 4) */
+.touch-bomb::before {
+  content: "";
+  display: block;
+  width: 62%;
+  height: 62%;
+  margin: 19%;
+  background: url("sprites/bombs.png") 66.667% 0 / 400% 100% no-repeat;
+  image-rendering: pixelated;
+}
+
+.touch-bomb.active {
+  background: #eb8c46;
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.45);
+}
+
+#touch-pause {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  font-family: "Pixel", monospace;
+  font-size: 20px;
+  color: #fff;
+  background: rgba(78, 92, 128, 0.9);
+  border: 3px solid #fff;
+  border-radius: 10px;
+}
+
+/* PORTRAIT, one player: stick left, bomb right (vertically in the middle of the free area) */
+.touch-stick.set-0 { left: 6vw; top: calc(50% - var(--stick) / 2); }
+.touch-bomb.set-0 { right: 8vw; top: calc(50% - var(--bomb) / 2); }
+.touch-stick.set-1,
+.touch-bomb.set-1,
+#touch-pause { display: none; }
+
+/* PORTRAIT, two players on one device: P1 left half, P2 right half */
+body.two-pads #touch-controls {
+  --stick: min(112px, 26vw);
+  --bomb: min(72px, 16vw);
+}
+body.two-pads .touch-stick.set-1,
+body.two-pads .touch-bomb.set-1 { display: block; }
+body.two-pads .touch-stick.set-1 { display: flex; }
+body.two-pads #touch-pause { display: block; left: calc(50% - 23px); top: calc(50% - var(--stick) / 2 - 62px); }
+body.two-pads .touch-stick.set-0 { left: 2vw; }
+body.two-pads .touch-bomb.set-0 { left: calc(4vw + var(--stick)); right: auto; }
+body.two-pads .touch-stick.set-1 { right: 2vw; top: calc(50% - var(--stick) / 2); }
+body.two-pads .touch-bomb.set-1 { right: calc(4vw + var(--stick)); top: calc(50% - var(--bomb) / 2); }
+
+/* LANDSCAPE: game in the middle, controls on the sides */
+@media (orientation: landscape) {
+  body.touch.playing {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  body.touch.playing #game {
+    --size: min(100vh, calc(100vw - 360px));
+  }
+
+  #touch-controls {
+    inset: 0;
+    --stick: min(160px, 42vh, 22vw);
+    --bomb: min(120px, 32vh, 16vw);
+  }
+
+  /* two players: stick and bomb stacked on each side */
+  body.two-pads #touch-controls {
+    --stick: min(130px, 30vh, 20vw);
+    --bomb: min(90px, 22vh, 14vw);
+  }
+
+  .touch-stick.set-0 { left: 3vw; top: calc(50% - var(--stick) / 2); }
+  .touch-bomb.set-0 { right: 4vw; top: calc(50% - var(--bomb) / 2); }
+
+  /* two players: stick below, bomb above, P1 left, P2 right */
+  body.two-pads .touch-stick.set-0 { left: 3vw; top: auto; bottom: 6vh; }
+  body.two-pads .touch-bomb.set-0 { left: calc(3vw + (var(--stick) - var(--bomb)) / 2); right: auto; top: 8vh; bottom: auto; }
+  body.two-pads .touch-stick.set-1 { right: 3vw; top: auto; bottom: 6vh; }
+  body.two-pads .touch-bomb.set-1 { right: calc(3vw + (var(--stick) - var(--bomb)) / 2); top: 8vh; bottom: auto; }
+  body.two-pads #touch-pause { left: calc(3vw + (var(--stick) - 46px) / 2); top: calc(50% - 23px); bottom: auto; }
+}
